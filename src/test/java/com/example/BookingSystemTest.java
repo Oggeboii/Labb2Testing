@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class BookingSystemTest {
 
     @Mock
-    RoomRepository roomRepository;
+    RoomRepositoryTestDouble roomRepository;
 
     @Mock
     NotificationService notificationService;
@@ -49,6 +49,18 @@ class BookingSystemTest {
                 LocalDateTime.of(2025, Month.JANUARY,27,12, 0),
                 null));
         assertEquals("Bokning kräver giltiga start- och sluttider samt rum-id", exception.getMessage());
+    }
+    @Test
+    @DisplayName("booking in past time throws exception")
+    void bookingInPastTimeThrowsException(){
+        TimeProviderForTest timeProvider = new TimeProviderForTest();
+
+        BookingSystem bookingSystem = new BookingSystem(timeProvider,roomRepository,notificationService );
+
+        var exception = assertThrows(IllegalArgumentException.class, () -> bookingSystem.bookRoom("R1",
+                LocalDateTime.of(2025, Month.JANUARY,27,11, 59),
+                LocalDateTime.of(2025, Month.JANUARY,27,12, 5)));
+        assertEquals("Kan inte boka tid i dåtid", exception.getMessage());
     }
 
 
