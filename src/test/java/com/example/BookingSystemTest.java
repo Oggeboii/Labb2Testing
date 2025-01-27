@@ -11,7 +11,8 @@ import static org.junit.jupiter.api.Assertions.*;
 class BookingSystemTest {
 
     @Mock
-    RoomRepositoryTestDouble roomRepository;
+    RoomRepositoryTestDouble roomRepository = new RoomRepositoryTestDouble();
+
 
     @Mock
     NotificationService notificationService;
@@ -19,6 +20,8 @@ class BookingSystemTest {
     @Test
     @DisplayName("RoomId null throws exception")
     void roomIdNullThrowsException(){
+
+
         TimeProviderForTest timeProvider = new TimeProviderForTest();
 
         BookingSystem bookingSystem = new BookingSystem(timeProvider,roomRepository,notificationService );
@@ -73,6 +76,22 @@ class BookingSystemTest {
                 LocalDateTime.of(2025, Month.JANUARY,27,12, 5),
                 LocalDateTime.of(2025, Month.JANUARY,27,12, 4)));
         assertEquals("Sluttid måste vara efter starttid", exception.getMessage());
+    }
+    @Test
+    @DisplayName("booking room with invalid id throws exception")
+    void bookingRoomWithInvalidIdThrowsException(){
+
+        TimeProviderForTest timeProvider = new TimeProviderForTest();
+
+        BookingSystem bookingSystem = new BookingSystem(timeProvider,roomRepository,notificationService );
+        Room room = new Room("R2","PentHouse");
+        roomRepository.save(room);
+
+
+        var exception = assertThrows(IllegalArgumentException.class, () -> bookingSystem.bookRoom("R1",
+                LocalDateTime.of(2025, Month.JANUARY,27,12, 0),
+                LocalDateTime.of(2025, Month.JANUARY,27,12, 5)));
+        assertEquals("Rummet existerar inte", exception.getMessage());
     }
 
 
