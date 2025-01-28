@@ -1,10 +1,14 @@
 package com.example;
 
+import net.bytebuddy.asm.MemberSubstitution;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -13,6 +17,7 @@ import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -44,31 +49,26 @@ class BookingSystemTest {
     BookingSystem bookingSystem;
 
     void time() {
-        when(timeProvider.getCurrentTime()).thenReturn(
-                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 0));
+        when(timeProvider.getCurrentTime()).thenReturn(now);
     }
 
-    @Test
-    @DisplayName("RoomId null throws exception")
-    void roomIdNullThrowsException() {
-        var exception = assertThrows(IllegalArgumentException.class, () ->
-                bookingSystem.bookRoom(null, now, nowPlusFive));
-        assertEquals("Bokning kräver giltiga start- och sluttider samt rum-id", exception.getMessage());
+    static Stream<Arguments> roomTimeNull(){
+        return Stream.of(
+                Arguments.of(null,
+                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 0),
+                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 5)),
+                Arguments.of("R1",
+                        null,
+                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 5)),
+                Arguments.of("R1",
+                        LocalDateTime.of(2025, Month.JANUARY, 27, 12, 0),
+                        null));
     }
-
-    @Test
-    @DisplayName("StartTime null throws exception")
-    void startTimeNullThrowsException() {
+    @ParameterizedTest
+    @MethodSource("roomTimeNull")
+    void nullForRoomIdStartTimeEndTimeThrowsException(String a1, LocalDateTime a2, LocalDateTime a3) {
         var exception = assertThrows(IllegalArgumentException.class, () ->
-                bookingSystem.bookRoom("T1", null, nowPlusFive));
-        assertEquals("Bokning kräver giltiga start- och sluttider samt rum-id", exception.getMessage());
-    }
-
-    @Test
-    @DisplayName("EndTime null throws exception")
-    void endTimeNullThrowsException() {
-        var exception = assertThrows(IllegalArgumentException.class, () ->
-                bookingSystem.bookRoom("T1", now, null));
+                bookingSystem.bookRoom(a1,a2,a3));
         assertEquals("Bokning kräver giltiga start- och sluttider samt rum-id", exception.getMessage());
     }
 
