@@ -18,9 +18,11 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 
-
 @ExtendWith(MockitoExtension.class)
 class BookingSystemTest {
+
+    LocalDateTime now = LocalDateTime.of(2025, Month.JANUARY, 27, 12, 0);
+    LocalDateTime nowPlusFive = LocalDateTime.of(2025, Month.JANUARY, 27, 12, 5);
 
     @Mock
     RoomRepository roomRepository;
@@ -48,27 +50,24 @@ class BookingSystemTest {
     @Test
     @DisplayName("RoomId null throws exception")
     void roomIdNullThrowsException() {
-        var exception = assertThrows(IllegalArgumentException.class, () -> bookingSystem.bookRoom(null,
-                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 0),
-                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 5)));
+        var exception = assertThrows(IllegalArgumentException.class, () ->
+                bookingSystem.bookRoom(null, now, nowPlusFive));
         assertEquals("Bokning kräver giltiga start- och sluttider samt rum-id", exception.getMessage());
     }
 
     @Test
     @DisplayName("StartTime null throws exception")
     void startTimeNullThrowsException() {
-        var exception = assertThrows(IllegalArgumentException.class, () -> bookingSystem.bookRoom("T1",
-                null,
-                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 5)));
+        var exception = assertThrows(IllegalArgumentException.class, () ->
+                bookingSystem.bookRoom("T1", null, nowPlusFive));
         assertEquals("Bokning kräver giltiga start- och sluttider samt rum-id", exception.getMessage());
     }
 
     @Test
     @DisplayName("EndTime null throws exception")
     void endTimeNullThrowsException() {
-        var exception = assertThrows(IllegalArgumentException.class, () -> bookingSystem.bookRoom("T1",
-                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 0),
-                null));
+        var exception = assertThrows(IllegalArgumentException.class, () ->
+                bookingSystem.bookRoom("T1", now, null));
         assertEquals("Bokning kräver giltiga start- och sluttider samt rum-id", exception.getMessage());
     }
 
@@ -76,9 +75,11 @@ class BookingSystemTest {
     @DisplayName("Booking in past time throws exception")
     void bookingInPastTimeThrowsException() {
         time();
-        var exception = assertThrows(IllegalArgumentException.class, () -> bookingSystem.bookRoom("R1",
-                LocalDateTime.of(2025, Month.JANUARY, 27, 11, 59),
-                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 5)));
+        var exception = assertThrows(IllegalArgumentException.class, () ->
+                bookingSystem.bookRoom("R1",
+                        LocalDateTime.of(2025, Month.JANUARY, 27, 11, 59),
+                        nowPlusFive));
+
         assertEquals("Kan inte boka tid i dåtid", exception.getMessage());
     }
 
@@ -89,6 +90,7 @@ class BookingSystemTest {
         var exception = assertThrows(IllegalArgumentException.class, () -> bookingSystem.bookRoom("R1",
                 LocalDateTime.of(2025, Month.JANUARY, 27, 12, 5),
                 LocalDateTime.of(2025, Month.JANUARY, 27, 12, 4)));
+
         assertEquals("Sluttid måste vara efter starttid", exception.getMessage());
     }
 
@@ -96,9 +98,9 @@ class BookingSystemTest {
     @DisplayName("booking room with invalid id throws exception")
     void bookingRoomWithInvalidIdThrowsException() {
         time();
-        var exception = assertThrows(IllegalArgumentException.class, () -> bookingSystem.bookRoom("R1",
-                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 0),
-                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 5)));
+        var exception = assertThrows(IllegalArgumentException.class, () ->
+                bookingSystem.bookRoom("R1", now, nowPlusFive));
+
         assertEquals("Rummet existerar inte", exception.getMessage());
     }
 
@@ -107,73 +109,61 @@ class BookingSystemTest {
     void bookRoomReturnFalseIfRoomIsNotAvailable() {
         time();
         when(roomRepository.findById("R1")).thenReturn(Optional.of(room));
-        when(room.isAvailable(
-                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 0),
-                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 5)))
+        when(room.isAvailable(now, nowPlusFive))
                 .thenReturn(false);
 
-        assertThat(bookingSystem.bookRoom("R1",
-                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 0),
-                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 5))).isFalse();
+        assertThat(bookingSystem.bookRoom("R1", now, nowPlusFive))
+                .isFalse();
 
     }
+
     @Test
     @DisplayName("bookRoom returns true if room is available")
     void bookRoomReturnTrueIfRoomIsAvailable() {
         time();
         when(roomRepository.findById("R1")).thenReturn(Optional.of(room));
-        when(room.isAvailable(
-                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 0),
-                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 5)))
+        when(room.isAvailable(now, nowPlusFive))
                 .thenReturn(true);
-        boolean result = bookingSystem.bookRoom("R1",
-                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 0),
-                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 5));
+        boolean result = bookingSystem.bookRoom("R1", now, nowPlusFive);
+
         assertThat(result).isTrue();
     }
+
     @Test
     @DisplayName("Verify that booking has been made")
-    void verifyThatBookingHasBeenMade(){
+    void verifyThatBookingHasBeenMade() {
         time();
         when(roomRepository.findById("R1")).thenReturn(Optional.of(room));
-        when(room.isAvailable(
-                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 0),
-                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 5)))
+        when(room.isAvailable(now, nowPlusFive))
                 .thenReturn(true);
-        bookingSystem.bookRoom("R1",
-                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 0),
-                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 5));
+        bookingSystem.bookRoom("R1", now, nowPlusFive);
+
         verify(room).addBooking(any(Booking.class));
     }
+
     @Test
     @DisplayName("Verify that room has been saved")
-    void verifyThatRoomHasBeenSaved(){
+    void verifyThatRoomHasBeenSaved() {
         time();
         when(roomRepository.findById("R1")).thenReturn(Optional.of(room));
-        when(room.isAvailable(
-                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 0),
-                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 5)))
+        when(room.isAvailable(now, nowPlusFive))
                 .thenReturn(true);
-        bookingSystem.bookRoom("R1",
-                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 0),
-                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 5));
+        bookingSystem.bookRoom("R1", now, nowPlusFive);
+
         verify(roomRepository).save(room);
     }
+
     @Test
     @DisplayName("Verify that booking confirmation has been sent")
     void verifyThatBookingConfirmationHasBeenSent() throws NotificationException {
         time();
         when(roomRepository.findById("R1")).thenReturn(Optional.of(room));
-        when(room.isAvailable(
-                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 0),
-                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 5)))
+        when(room.isAvailable(now, nowPlusFive))
                 .thenReturn(true);
         doThrow(new NotificationException("Notifiering misslyckades"))
                 .when(notificationService).sendBookingConfirmation(any(Booking.class));
 
-        bookingSystem.bookRoom("R1",
-                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 0),
-                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 5));
+        bookingSystem.bookRoom("R1", now, nowPlusFive);
         verify(notificationService).sendBookingConfirmation(any(Booking.class));
     }
 
