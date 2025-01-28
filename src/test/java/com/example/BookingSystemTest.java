@@ -227,9 +227,6 @@ class BookingSystemTest {
     @DisplayName("Canceling started booking throws exception ")
     void cancelingStartedBookingThrowsException() {
         time();
-//        Room mockedRoom = mock(Room.class);
-//        Booking mockedBooking = mock(Booking.class);
-
         when(room.hasBooking("BookingId")).thenReturn(true);
         when(room.getBooking("BookingId")).thenReturn(booking);
         when(booking.getStartTime()).thenReturn(now.minusMinutes(1));
