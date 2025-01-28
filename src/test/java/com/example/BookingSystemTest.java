@@ -174,6 +174,14 @@ class BookingSystemTest {
 
         assertEquals("Måste ange både start- och sluttid", exception.getMessage());
     }
+    @Test
+    @DisplayName("availableRooms throw exception if endTime is null")
+    void availableRoomsThrowExceptionIfEndTimeIsNull(){
+        var exception = assertThrows(IllegalArgumentException.class, () ->
+                bookingSystem.getAvailableRooms(now, null));
+
+        assertEquals("Måste ange både start- och sluttid", exception.getMessage());
+    }
 
 
 
