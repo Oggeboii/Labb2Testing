@@ -230,12 +230,22 @@ class BookingSystemTest {
         when(room.hasBooking("BookingId")).thenReturn(true);
         when(room.getBooking("BookingId")).thenReturn(booking);
         when(booking.getStartTime()).thenReturn(now.minusMinutes(1));
-
         when(roomRepository.findAll()).thenReturn(List.of(room));
         var exception = assertThrows(IllegalStateException.class, () ->
                 bookingSystem.cancelBooking("BookingId"));
         assertEquals("Kan inte avboka påbörjad eller avslutad bokning",
                 exception.getMessage());
+    }
+    @Test
+    @DisplayName("Verify that booking has been removed from room ")
+    void verifyThatBookingHasBeenRemovedFromRoom(){
+        time();
+        when(room.hasBooking("BookingId")).thenReturn(true);
+        when(room.getBooking("BookingId")).thenReturn(booking);
+        when(booking.getStartTime()).thenReturn(nowPlusFive);
+        when(roomRepository.findAll()).thenReturn(List.of(room));
+        bookingSystem.cancelBooking("BookingId");
+        verify(room).removeBooking("BookingId");
     }
 
 
