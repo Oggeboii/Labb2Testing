@@ -145,6 +145,20 @@ class BookingSystemTest {
                 LocalDateTime.of(2025, Month.JANUARY, 27, 12, 5));
         verify(room).addBooking(any(Booking.class));
     }
+    @Test
+    @DisplayName("Verify that room has been saved")
+    void verifyThatRoomHasBeenSaved(){
+        time();
+        when(roomRepository.findById("R1")).thenReturn(Optional.of(room));
+        when(room.isAvailable(
+                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 0),
+                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 5)))
+                .thenReturn(true);
+        bookingSystem.bookRoom("R1",
+                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 0),
+                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 5));
+        verify(roomRepository).save(room);
+    }
 
 
 
