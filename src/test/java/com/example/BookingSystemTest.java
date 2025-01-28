@@ -21,10 +21,12 @@ import static org.mockito.Mockito.when;
 class BookingSystemTest {
 
 
-
-    @Mock RoomRepository roomRepository;
-    @Mock NotificationService notificationService;
-    @Mock TimeProvider timeProvider;
+    @Mock
+    RoomRepository roomRepository;
+    @Mock
+    NotificationService notificationService;
+    @Mock
+    TimeProvider timeProvider;
 
 
     @InjectMocks
@@ -42,67 +44,80 @@ class BookingSystemTest {
 //    }
 
 
-
     @Test
     @DisplayName("RoomId null throws exception")
-    void roomIdNullThrowsException(){
+    void roomIdNullThrowsException() {
         var exception = assertThrows(IllegalArgumentException.class, () -> bookingSystem.bookRoom(null,
-                LocalDateTime.of(2025, Month.JANUARY,27,12, 0),
-                LocalDateTime.of(2025, Month.JANUARY,27,12, 5)));
+                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 0),
+                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 5)));
         assertEquals("Bokning kräver giltiga start- och sluttider samt rum-id", exception.getMessage());
     }
+
     @Test
     @DisplayName("StartTime null throws exception")
-    void startTimeNullThrowsException(){
+    void startTimeNullThrowsException() {
         var exception = assertThrows(IllegalArgumentException.class, () -> bookingSystem.bookRoom("T1",
                 null,
-                LocalDateTime.of(2025, Month.JANUARY,27,12, 5)));
+                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 5)));
         assertEquals("Bokning kräver giltiga start- och sluttider samt rum-id", exception.getMessage());
     }
+
     @Test
     @DisplayName("EndTime null throws exception")
-    void endTimeNullThrowsException(){
+    void endTimeNullThrowsException() {
         var exception = assertThrows(IllegalArgumentException.class, () -> bookingSystem.bookRoom("T1",
-                LocalDateTime.of(2025, Month.JANUARY,27,12, 0),
+                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 0),
                 null));
         assertEquals("Bokning kräver giltiga start- och sluttider samt rum-id", exception.getMessage());
     }
+
     @Test
     @DisplayName("Booking in past time throws exception")
-    void bookingInPastTimeThrowsException(){
+    void bookingInPastTimeThrowsException() {
         when(timeProvider.getCurrentTime()).thenReturn(
-                LocalDateTime.of(2025, Month.JANUARY,27,12, 0));
+                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 0));
 
 
         var exception = assertThrows(IllegalArgumentException.class, () -> bookingSystem.bookRoom("R1",
-                LocalDateTime.of(2025, Month.JANUARY,27,11, 59),
-                LocalDateTime.of(2025, Month.JANUARY,27,12, 5)));
+                LocalDateTime.of(2025, Month.JANUARY, 27, 11, 59),
+                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 5)));
         assertEquals("Kan inte boka tid i dåtid", exception.getMessage());
     }
+
     @Test
     @DisplayName("booking with endTime before startTime throws exception")
-    void bookingWithEndTimeBeforeStartTimeThrowsException(){
+    void bookingWithEndTimeBeforeStartTimeThrowsException() {
         when(timeProvider.getCurrentTime()).thenReturn(
-                LocalDateTime.of(2025, Month.JANUARY,27,12, 0));
+                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 0));
 
         var exception = assertThrows(IllegalArgumentException.class, () -> bookingSystem.bookRoom("R1",
-                LocalDateTime.of(2025, Month.JANUARY,27,12, 5),
-                LocalDateTime.of(2025, Month.JANUARY,27,12, 4)));
+                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 5),
+                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 4)));
         assertEquals("Sluttid måste vara efter starttid", exception.getMessage());
     }
+    @Test
+    @DisplayName("booking room with invalid id throws exception")
+    void bookingRoomWithInvalidIdThrowsException(){
+        when(timeProvider.getCurrentTime()).thenReturn(
+                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 0));
+
+        var exception = assertThrows(IllegalArgumentException.class, () -> bookingSystem.bookRoom("R1",
+                LocalDateTime.of(2025, Month.JANUARY,27,12, 0),
+                LocalDateTime.of(2025, Month.JANUARY,27,12, 5)));
+        assertEquals("Rummet existerar inte", exception.getMessage());
+    }
+
 //    @Test
-//    @DisplayName("booking room with invalid id throws exception")
-//    void bookingRoomWithInvalidIdThrowsException(){
+//    @DisplayName("Book room return false if room is not available")
+//    void bookRoomReturnFalseIfRoomIsNotAvailable() {
+//        when(timeProvider.getCurrentTime()).thenReturn(
+//                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 0));
 //
+//        assertThat(bookingSystem.bookRoom("R1",
+//                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 0),
+//                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 5))).isFalse();
 //
-//    when(roomRepository.findById("R2")).thenReturn(Optional.empty());
-//        var exception = assertThrows(IllegalArgumentException.class, () -> bookingSystem.bookRoom("R1",
-//                LocalDateTime.of(2025, Month.JANUARY,27,12, 0),
-//                LocalDateTime.of(2025, Month.JANUARY,27,12, 5)));
-//        assertEquals("Rummet existerar inte", exception.getMessage());
 //    }
-
-
 
 
     @Test
