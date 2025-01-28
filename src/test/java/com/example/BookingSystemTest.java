@@ -201,6 +201,14 @@ class BookingSystemTest {
 
         assertThat(bookingSystem.getAvailableRooms(now, nowPlusFive)).isEqualTo(List.of(room));
     }
+    @Test
+    @DisplayName("CancelBooking throws exception when bookingId is null")
+    void cancelBookingThrowsExceptionWhenBookingIdIsNull(){
+        var exception = assertThrows(IllegalArgumentException.class, () ->
+                bookingSystem.cancelBooking(null));
+        assertEquals("Boknings-id kan inte vara null", exception.getMessage());
+
+    }
 
 
 
