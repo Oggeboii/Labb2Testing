@@ -166,13 +166,17 @@ class BookingSystemTest {
         bookingSystem.bookRoom("R1", now, nowPlusFive);
         verify(notificationService).sendBookingConfirmation(any(Booking.class));
     }
-
-
     @Test
-    void getAvailableRooms() {
+    @DisplayName("availableRooms throw exception if startTime is null")
+    void availableRoomsThrowExceptionIfStartTimeIsNull(){
+        var exception = assertThrows(IllegalArgumentException.class, () ->
+                bookingSystem.getAvailableRooms(null, nowPlusFive));
+
+        assertEquals("Måste ange både start- och sluttid", exception.getMessage());
     }
 
-    @Test
-    void cancelBooking() {
-    }
+
+
+
+
 }
