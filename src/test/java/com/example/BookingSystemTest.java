@@ -11,6 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -189,6 +190,16 @@ class BookingSystemTest {
                 bookingSystem.getAvailableRooms(nowPlusFive, now));
 
         assertEquals("Sluttid måste vara efter starttid", exception.getMessage());
+    }
+    @Test
+    @DisplayName("availableRooms returns list of available rooms")
+    void availableRoomsReturnsListOfAvailableRooms() {
+
+        when(roomRepository.findAll()).thenReturn(List.of(room));
+        when(room.isAvailable(now,nowPlusFive)).thenReturn(true);
+        bookingSystem.getAvailableRooms(now, nowPlusFive);
+
+        assertThat(bookingSystem.getAvailableRooms(now, nowPlusFive)).isEqualTo(List.of(room));
     }
 
 
