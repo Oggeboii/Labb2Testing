@@ -48,27 +48,28 @@ class BookingSystemTest {
     @InjectMocks
     BookingSystem bookingSystem;
 
-    void time() {
-        when(timeProvider.getCurrentTime()).thenReturn(now);
-    }
-
-    static Stream<Arguments> roomTimeNull(){
+    static Stream<Arguments> roomTimeNull() {
         return Stream.of(
                 Arguments.of(null,
-                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 0),
-                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 5)),
+                        LocalDateTime.of(2025, Month.JANUARY, 27, 12, 0),
+                        LocalDateTime.of(2025, Month.JANUARY, 27, 12, 5)),
                 Arguments.of("R1",
                         null,
-                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 5)),
+                        LocalDateTime.of(2025, Month.JANUARY, 27, 12, 5)),
                 Arguments.of("R1",
                         LocalDateTime.of(2025, Month.JANUARY, 27, 12, 0),
                         null));
     }
+
+    void time() {
+        when(timeProvider.getCurrentTime()).thenReturn(now);
+    }
+
     @ParameterizedTest
     @MethodSource("roomTimeNull")
     void nullForRoomIdStartTimeEndTimeThrowsException(String a1, LocalDateTime a2, LocalDateTime a3) {
         var exception = assertThrows(IllegalArgumentException.class, () ->
-                bookingSystem.bookRoom(a1,a2,a3));
+                bookingSystem.bookRoom(a1, a2, a3));
         assertEquals("Bokning kräver giltiga start- och sluttider samt rum-id", exception.getMessage());
     }
 
@@ -167,58 +168,78 @@ class BookingSystemTest {
         bookingSystem.bookRoom("R1", now, nowPlusFive);
         verify(notificationService).sendBookingConfirmation(any(Booking.class));
     }
+
     @Test
     @DisplayName("availableRooms throw exception if startTime is null")
-    void availableRoomsThrowExceptionIfStartTimeIsNull(){
+    void availableRoomsThrowExceptionIfStartTimeIsNull() {
         var exception = assertThrows(IllegalArgumentException.class, () ->
                 bookingSystem.getAvailableRooms(null, nowPlusFive));
 
         assertEquals("Måste ange både start- och sluttid", exception.getMessage());
     }
+
     @Test
     @DisplayName("availableRooms throw exception if endTime is null")
-    void availableRoomsThrowExceptionIfEndTimeIsNull(){
+    void availableRoomsThrowExceptionIfEndTimeIsNull() {
         var exception = assertThrows(IllegalArgumentException.class, () ->
                 bookingSystem.getAvailableRooms(now, null));
 
         assertEquals("Måste ange både start- och sluttid", exception.getMessage());
     }
+
     @Test
     @DisplayName("availableRooms throw exception if endTime is before startTime")
-    void availableRoomsThrowExceptionIfEndTimeIsBeforeStartTime(){
+    void availableRoomsThrowExceptionIfEndTimeIsBeforeStartTime() {
         var exception = assertThrows(IllegalArgumentException.class, () ->
                 bookingSystem.getAvailableRooms(nowPlusFive, now));
 
         assertEquals("Sluttid måste vara efter starttid", exception.getMessage());
     }
+
     @Test
     @DisplayName("availableRooms returns list of available rooms")
     void availableRoomsReturnsListOfAvailableRooms() {
 
         when(roomRepository.findAll()).thenReturn(List.of(room));
-        when(room.isAvailable(now,nowPlusFive)).thenReturn(true);
+        when(room.isAvailable(now, nowPlusFive)).thenReturn(true);
         bookingSystem.getAvailableRooms(now, nowPlusFive);
 
         assertThat(bookingSystem.getAvailableRooms(now, nowPlusFive)).isEqualTo(List.of(room));
     }
+
     @Test
     @DisplayName("CancelBooking throws exception when bookingId is null")
-    void cancelBookingThrowsExceptionWhenBookingIdIsNull(){
+    void cancelBookingThrowsExceptionWhenBookingIdIsNull() {
         var exception = assertThrows(IllegalArgumentException.class, () ->
                 bookingSystem.cancelBooking(null));
         assertEquals("Boknings-id kan inte vara null", exception.getMessage());
     }
+
     @Test
     @DisplayName("CancelBooking returns false if roomWithBooking returns empty")
-    void cancelBookingReturnsFalseIfRoomWithBookingReturnsEmpty(){
-
+    void cancelBookingReturnsFalseIfRoomWithBookingReturnsEmpty() {
 
         bookingSystem.cancelBooking("BookingId");
         assertThat(bookingSystem.cancelBooking("BookingId")).isEqualTo(false);
     }
 
+    @Test
+    @DisplayName("Canceling started booking throws exception ")
+    void cancelingStartedBookingThrowsException() {
+        time();
+//        Room mockedRoom = mock(Room.class);
+//        Booking mockedBooking = mock(Booking.class);
 
+        when(room.hasBooking("BookingId")).thenReturn(true);
+        when(room.getBooking("BookingId")).thenReturn(booking);
+        when(booking.getStartTime()).thenReturn(now.minusMinutes(1));
 
+        when(roomRepository.findAll()).thenReturn(List.of(room));
+        var exception = assertThrows(IllegalStateException.class, () ->
+                bookingSystem.cancelBooking("BookingId"));
+        assertEquals("Kan inte avboka påbörjad eller avslutad bokning",
+                exception.getMessage());
+    }
 
 
 }
