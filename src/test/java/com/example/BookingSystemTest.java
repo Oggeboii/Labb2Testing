@@ -17,20 +17,26 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+
+
 @ExtendWith(MockitoExtension.class)
 class BookingSystemTest {
 
-
     @Mock
     RoomRepository roomRepository;
+
     @Mock
     NotificationService notificationService;
+
     @Mock
     TimeProvider timeProvider;
+
     @Mock
     Room room;
+
     @Mock
     Booking booking;
+
     @InjectMocks
     BookingSystem bookingSystem;
 
@@ -125,6 +131,21 @@ class BookingSystemTest {
                 LocalDateTime.of(2025, Month.JANUARY, 27, 12, 5));
         assertThat(result).isTrue();
     }
+    @Test
+    @DisplayName("Verify that booking has been made")
+    void verifyThatBookingHasBeenMade(){
+        time();
+        when(roomRepository.findById("R1")).thenReturn(Optional.of(room));
+        when(room.isAvailable(
+                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 0),
+                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 5)))
+                .thenReturn(true);
+        bookingSystem.bookRoom("R1",
+                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 0),
+                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 5));
+        verify(room).addBooking(any(Booking.class));
+    }
+
 
 
     @Test
