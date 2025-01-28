@@ -247,6 +247,20 @@ class BookingSystemTest {
         bookingSystem.cancelBooking("BookingId");
         verify(room).removeBooking("BookingId");
     }
+    @Test
+    @DisplayName("Verify that cancellation confirmation has been sent")
+    void verifyThatCancellationConfirmationHasBeenSent() throws NotificationException {
+        time();
+        when(room.hasBooking("BookingId")).thenReturn(true);
+        when(room.getBooking("BookingId")).thenReturn(booking);
+        when(booking.getStartTime()).thenReturn(nowPlusFive);
+        when(roomRepository.findAll()).thenReturn(List.of(room));
+
+        doThrow(new NotificationException("Notifiering misslyckades"))
+                .when(notificationService).sendCancellationConfirmation(any(Booking.class));
+        bookingSystem.cancelBooking("BookingId");
+        verify(notificationService).sendCancellationConfirmation(any(Booking.class));
+    }
 
 
 }
