@@ -27,23 +27,12 @@ class BookingSystemTest {
     NotificationService notificationService;
     @Mock
     TimeProvider timeProvider;
+    @Mock
+    Room room;
 
 
     @InjectMocks
     BookingSystem bookingSystem;
-//    @Test
-//    @DisplayName("RoomId null throws exception2")
-//    void roomIdNullThrowsException2() {
-////        when(timeProvider.getCurrentTime()).thenReturn(LocalDateTime.of(2025, Month.JANUARY,27,12, 0));
-////        when(roomRepository.findById("R1")).thenReturn(Optional.of(new Room("R1", "penthouse")));
-//
-//        var exception = assertThrows(IllegalArgumentException.class, () -> bookingSystem.bookRoom("R1",
-//                null,
-//                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 5)));
-//        assertEquals("Bokning kräver giltiga start- och sluttider samt rum-id", exception.getMessage());
-//    }
-
-
     @Test
     @DisplayName("RoomId null throws exception")
     void roomIdNullThrowsException() {
@@ -107,17 +96,22 @@ class BookingSystemTest {
         assertEquals("Rummet existerar inte", exception.getMessage());
     }
 
-//    @Test
-//    @DisplayName("Book room return false if room is not available")
-//    void bookRoomReturnFalseIfRoomIsNotAvailable() {
-//        when(timeProvider.getCurrentTime()).thenReturn(
-//                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 0));
-//
-//        assertThat(bookingSystem.bookRoom("R1",
-//                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 0),
-//                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 5))).isFalse();
-//
-//    }
+    @Test
+    @DisplayName("Book room return false if room is not available")
+    void bookRoomReturnFalseIfRoomIsNotAvailable() {
+        when(timeProvider.getCurrentTime()).thenReturn(
+                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 0));
+        when(roomRepository.findById("R1")).thenReturn(Optional.of(room));
+        when(room.isAvailable(
+                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 0),
+                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 5)))
+                .thenReturn(false);
+
+        assertThat(bookingSystem.bookRoom("R1",
+                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 0),
+                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 5))).isFalse();
+
+    }
 
 
     @Test
