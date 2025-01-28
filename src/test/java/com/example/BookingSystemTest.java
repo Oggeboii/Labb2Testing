@@ -182,6 +182,14 @@ class BookingSystemTest {
 
         assertEquals("Måste ange både start- och sluttid", exception.getMessage());
     }
+    @Test
+    @DisplayName("availableRooms throw exception if endTime is before startTime")
+    void availableRoomsThrowExceptionIfEndTimeIsBeforeStartTime(){
+        var exception = assertThrows(IllegalArgumentException.class, () ->
+                bookingSystem.getAvailableRooms(nowPlusFive, now));
+
+        assertEquals("Sluttid måste vara efter starttid", exception.getMessage());
+    }
 
 
 
