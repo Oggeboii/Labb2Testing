@@ -159,7 +159,23 @@ class BookingSystemTest {
                 LocalDateTime.of(2025, Month.JANUARY, 27, 12, 5));
         verify(roomRepository).save(room);
     }
+    @Test
+    @DisplayName("Verify that booking confirmation has been sent")
+    void verifyThatBookingConfirmationHasBeenSent() throws NotificationException {
+        time();
+        when(roomRepository.findById("R1")).thenReturn(Optional.of(room));
+        when(room.isAvailable(
+                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 0),
+                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 5)))
+                .thenReturn(true);
+        doThrow(new NotificationException("Notifiering misslyckades"))
+                .when(notificationService).sendBookingConfirmation(any(Booking.class));
 
+        bookingSystem.bookRoom("R1",
+                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 0),
+                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 5));
+        verify(notificationService).sendBookingConfirmation(any(Booking.class));
+    }
 
 
     @Test
