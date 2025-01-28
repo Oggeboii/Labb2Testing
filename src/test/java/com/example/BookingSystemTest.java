@@ -15,8 +15,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.doCallRealMethod;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class BookingSystemTest {
@@ -30,6 +29,8 @@ class BookingSystemTest {
     TimeProvider timeProvider;
     @Mock
     Room room;
+    @Mock
+    Booking booking;
     @InjectMocks
     BookingSystem bookingSystem;
 
@@ -109,6 +110,20 @@ class BookingSystemTest {
                 LocalDateTime.of(2025, Month.JANUARY, 27, 12, 0),
                 LocalDateTime.of(2025, Month.JANUARY, 27, 12, 5))).isFalse();
 
+    }
+    @Test
+    @DisplayName("bookRoom returns true if room is available")
+    void bookRoomReturnTrueIfRoomIsAvailable() {
+        time();
+        when(roomRepository.findById("R1")).thenReturn(Optional.of(room));
+        when(room.isAvailable(
+                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 0),
+                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 5)))
+                .thenReturn(true);
+        boolean result = bookingSystem.bookRoom("R1",
+                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 0),
+                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 5));
+        assertThat(result).isTrue();
     }
 
 
