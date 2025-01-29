@@ -2,8 +2,13 @@ package com.example;
 
 public class ShoppingCart {
 
+    private int size = 0;
+
     public int size(){
-        return 0;
+        return size;
+    }
+    public void add(String item){
+        size++;
     }
 
 

@@ -21,6 +21,15 @@ class ShoppingCartTest {
         ShoppingCart shoppingCart = new ShoppingCart();
         assertThat(shoppingCart.size()).isEqualTo(0);
     }
+    @Test
+    @DisplayName("Add item to shopping cart increases size")
+    void addItemToShoppingCartIncreasesSize(){
+        ShoppingCart shoppingCart = new ShoppingCart();
+        shoppingCart.add("");
+        assertThat(shoppingCart.size()).isEqualTo(1);
+
+    }
+
 
 
 }
