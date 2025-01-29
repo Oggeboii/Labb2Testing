@@ -7,8 +7,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ShoppingCartTest {
 
-
-
     @Test
     @DisplayName("Creates shopping cart object")
     void createsShoppingCart() {
@@ -25,18 +23,26 @@ class ShoppingCartTest {
     @DisplayName("Add item to shopping cart increases size")
     void addItemToShoppingCartIncreasesSize(){
         ShoppingCart shoppingCart = new ShoppingCart();
-        shoppingCart.add("");
+        shoppingCart.add("",5);
         assertThat(shoppingCart.size()).isEqualTo(1);
     }
     @Test
     @DisplayName("Removing item from shopping cart decreases size")
     void removingItemFromShoppingCartDecreasesSize(){
         ShoppingCart shoppingCart = new ShoppingCart();
-        shoppingCart.add("");
-        shoppingCart.add("");
-        shoppingCart.remove("");
+        shoppingCart.add("",5);
+        shoppingCart.add("",5);
+        shoppingCart.remove("",5);
         assertThat(shoppingCart.size()).isEqualTo(1);
-
+    }
+    
+    @Test
+    @DisplayName("Calculate price of all items in shopping cart")
+    void calculatePriceOfItemsInShoppingCart(){
+        ShoppingCart shoppingCart = new ShoppingCart();
+        shoppingCart.add("",5);
+        shoppingCart.add("",5);
+        assertThat(shoppingCart.totalPrice()).isEqualTo(10);
     }
 
 
