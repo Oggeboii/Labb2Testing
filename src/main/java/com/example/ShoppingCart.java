@@ -10,6 +10,9 @@ public class ShoppingCart {
     public void add(String item){
         size++;
     }
+    public void remove(String item){
+        size--;
+    }
 
 
 }

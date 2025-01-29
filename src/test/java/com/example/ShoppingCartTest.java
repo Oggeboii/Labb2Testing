@@ -27,6 +27,15 @@ class ShoppingCartTest {
         ShoppingCart shoppingCart = new ShoppingCart();
         shoppingCart.add("");
         assertThat(shoppingCart.size()).isEqualTo(1);
+    }
+    @Test
+    @DisplayName("Removing item from shopping cart decreases size")
+    void removingItemFromShoppingCartDecreasesSize(){
+        ShoppingCart shoppingCart = new ShoppingCart();
+        shoppingCart.add("");
+        shoppingCart.add("");
+        shoppingCart.remove("");
+        assertThat(shoppingCart.size()).isEqualTo(1);
 
     }
 
