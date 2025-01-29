@@ -19,6 +19,9 @@ public class ShoppingCart {
     public int totalPrice(){
         return totalPrice;
     }
+    public void totalDiscount(float discount){
+        totalPrice = (int) (totalPrice - (totalPrice * discount));
+    }
 
 
 }

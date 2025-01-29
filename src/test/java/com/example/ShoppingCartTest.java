@@ -2,7 +2,7 @@ package com.example;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ShoppingCartTest {
@@ -19,6 +19,7 @@ class ShoppingCartTest {
         ShoppingCart shoppingCart = new ShoppingCart();
         assertThat(shoppingCart.size()).isEqualTo(0);
     }
+
     @Test
     @DisplayName("Add item to shopping cart increases size")
     void addItemToShoppingCartIncreasesSize(){
@@ -26,6 +27,7 @@ class ShoppingCartTest {
         shoppingCart.add("",5);
         assertThat(shoppingCart.size()).isEqualTo(1);
     }
+
     @Test
     @DisplayName("Removing item from shopping cart decreases size")
     void removingItemFromShoppingCartDecreasesSize(){
@@ -43,6 +45,16 @@ class ShoppingCartTest {
         shoppingCart.add("",5);
         shoppingCart.add("",5);
         assertThat(shoppingCart.totalPrice()).isEqualTo(10);
+    }
+    @Test
+    @DisplayName("Calculate price after discount been applied to whole cart")
+    void calculatePriceAfterDiscountBeenAppliedToWholeCart(){
+        ShoppingCart shoppingCart = new ShoppingCart();
+        shoppingCart.add("",5);
+        shoppingCart.add("",5);
+        shoppingCart.totalDiscount(0.2F);
+        assertThat(shoppingCart.totalPrice()).isEqualTo(8);
+
     }
 
 
