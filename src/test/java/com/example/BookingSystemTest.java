@@ -2,7 +2,6 @@ package com.example;
 
 
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -26,8 +25,8 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class BookingSystemTest {
 
-    static LocalDateTime now = LocalDateTime.of(2025, Month.JANUARY, 27, 12, 0);
-    static LocalDateTime nowPlusFive = LocalDateTime.of(2025, Month.JANUARY, 27, 12, 5);
+    static LocalDateTime now = java.time.LocalDateTime.of(2025, Month.JANUARY, 27, 12, 0);
+    static LocalDateTime nowPlusFive = java.time.LocalDateTime.of(2025, Month.JANUARY, 27, 12, 5);
 
     @Mock
     RoomRepository roomRepository;
@@ -47,27 +46,21 @@ class BookingSystemTest {
     @InjectMocks
     BookingSystem bookingSystem;
 
-    static Stream<Arguments> roomTimeNull() {
+    static Stream<Arguments> nullBookingParameters() {
         return Stream.of(
-                Arguments.of(null,
-                        now,
-                        nowPlusFive),
-                Arguments.of("R1",
-                        null,
-                        nowPlusFive),
-                Arguments.of("R1",
-                        now,
-                        null));
+                Arguments.of(null, now, nowPlusFive),
+                Arguments.of("R1", null, nowPlusFive),
+                Arguments.of("R1", now, null));
     }
 
     void time() {
         when(timeProvider.getCurrentTime()).thenReturn(now);
     }
 
-
     @ParameterizedTest
-    @MethodSource("roomTimeNull")
-    void nullForRoomIdStartTimeEndTimeThrowsException(String a1, LocalDateTime a2, LocalDateTime a3) {
+    @MethodSource("nullBookingParameters")
+    @DisplayName("null for RoomId, startTime or endTime throws exception")
+    void nullForRoomIdStartTimeOrEndTimeThrowsException(String a1, LocalDateTime a2, LocalDateTime a3) {
         var exception = assertThrows(IllegalArgumentException.class, () ->
                 bookingSystem.bookRoom(a1, a2, a3));
         assertEquals("Bokning kräver giltiga start- och sluttider samt rum-id", exception.getMessage());
