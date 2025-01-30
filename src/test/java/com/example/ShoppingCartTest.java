@@ -38,6 +38,18 @@ class ShoppingCartTest {
         shoppingCart.remove("Potatoes",5);
         assertThat(shoppingCart.size()).isEqualTo(1);
     }
+    @Test
+    @DisplayName("Item is removed from cart after remove has been called")
+    void itemIsRemovedFromCartAfterRemoveHasBeenCalled(){
+        ShoppingCart shoppingCart = new ShoppingCart();
+        shoppingCart.add("Milk",5);
+        shoppingCart.add("Potatoes",5);
+        shoppingCart.remove("Potatoes",5);
+        assertThat(shoppingCart.findAll())
+                .extracting(Item::getName)
+                .contains("Milk");
+
+    }
     
     @Test
     @DisplayName("Calculate price of all items in shopping cart")
@@ -65,7 +77,6 @@ class ShoppingCartTest {
         assertThat(shoppingCart.findAll())
                 .extracting(Item::getName)
                 .contains("Milk","Potatoes");
-
     }
 
 
