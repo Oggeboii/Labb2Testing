@@ -52,6 +52,12 @@ class BookingSystemTest {
                 Arguments.of("R1", null, nowPlusFive),
                 Arguments.of("R1", now, null));
     }
+    static Stream<Arguments> InvalidBookingParameters() {
+        return Stream.of(
+                Arguments.of("R1", now.minusMinutes(1), nowPlusFive, "Kan inte boka tid i dåtid"),
+                Arguments.of("R1", nowPlusFive, nowPlusFive.minusMinutes(1), "Sluttid måste vara efter starttid"),
+                Arguments.of("R1", now, nowPlusFive, "Rummet existerar inte"));
+    }
 
     void time() {
         when(timeProvider.getCurrentTime()).thenReturn(now);
@@ -59,44 +65,21 @@ class BookingSystemTest {
 
     @ParameterizedTest
     @MethodSource("nullBookingParameters")
-    @DisplayName("null for RoomId, startTime or endTime throws exception")
-    void nullForRoomIdStartTimeOrEndTimeThrowsException(String a1, LocalDateTime a2, LocalDateTime a3) {
+    @DisplayName("booking with null for RoomId, startTime or endTime throws exception")
+    void bookingWithNullForRoomIdStartTimeOrEndTimeThrowsException(String roomId, LocalDateTime startTime, LocalDateTime endTime) {
         var exception = assertThrows(IllegalArgumentException.class, () ->
-                bookingSystem.bookRoom(a1, a2, a3));
+                bookingSystem.bookRoom(roomId, startTime, endTime));
         assertEquals("Bokning kräver giltiga start- och sluttider samt rum-id", exception.getMessage());
     }
-
-    @Test
-    @DisplayName("Booking in past time throws exception")
-    void bookingInPastTimeThrowsException() {
+    @ParameterizedTest
+    @MethodSource("InvalidBookingParameters")
+    @DisplayName("Booking in past time, endTime before startTime or non-existing room throws exception ")
+    void bookingInPastTimeEndTimeBeforeStartTimeOrNonExistingRoomThrowsException(String roomId, LocalDateTime startTime, LocalDateTime endTime, String exceptionMessage) {
         time();
         var exception = assertThrows(IllegalArgumentException.class, () ->
-                bookingSystem.bookRoom("R1",
-                        LocalDateTime.of(2025, Month.JANUARY, 27, 11, 59),
-                        nowPlusFive));
+                bookingSystem.bookRoom(roomId, startTime, endTime));
 
-        assertEquals("Kan inte boka tid i dåtid", exception.getMessage());
-    }
-
-    @Test
-    @DisplayName("booking with endTime before startTime throws exception")
-    void bookingWithEndTimeBeforeStartTimeThrowsException() {
-        time();
-        var exception = assertThrows(IllegalArgumentException.class, () -> bookingSystem.bookRoom("R1",
-                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 5),
-                LocalDateTime.of(2025, Month.JANUARY, 27, 12, 4)));
-
-        assertEquals("Sluttid måste vara efter starttid", exception.getMessage());
-    }
-
-    @Test
-    @DisplayName("booking room with invalid id throws exception")
-    void bookingRoomWithInvalidIdThrowsException() {
-        time();
-        var exception = assertThrows(IllegalArgumentException.class, () ->
-                bookingSystem.bookRoom("R1", now, nowPlusFive));
-
-        assertEquals("Rummet existerar inte", exception.getMessage());
+        assertEquals(exceptionMessage, exception.getMessage());
     }
 
     @Test
