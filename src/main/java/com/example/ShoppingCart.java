@@ -28,6 +28,8 @@ public class ShoppingCart {
     public void totalDiscount(float discount){
         totalPrice = (int) (totalPrice - (totalPrice * discount));
     }
-
+    public List<Item> findAll(){
+        return items;
+    }
 
 }

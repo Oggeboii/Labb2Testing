@@ -56,6 +56,17 @@ class ShoppingCartTest {
         shoppingCart.totalDiscount(0.2F);
         assertThat(shoppingCart.totalPrice()).isEqualTo(8);
     }
+    @Test
+    @DisplayName("Shopping cart contains correct items")
+    void shoppingCartContainsCorrectItems(){
+        ShoppingCart shoppingCart = new ShoppingCart();
+        shoppingCart.add("Milk",5);
+        shoppingCart.add("Potatoes",5);
+        assertThat(shoppingCart.findAll())
+                .extracting(Item::getName)
+                .contains("Milk","Potatoes");
+
+    }
 
 
 }
