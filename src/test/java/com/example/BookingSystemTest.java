@@ -1,7 +1,9 @@
 package com.example;
 
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -92,57 +94,54 @@ class BookingSystemTest {
 
         assertThat(bookingSystem.bookRoom("R1", now, nowPlusFive))
                 .isFalse();
-
     }
+    @Nested
+    @DisplayName("Tests for successful booking")
+    class successfulBooking {
+        @BeforeEach
+        void setUp() {
+            time();
+            when(roomRepository.findById("R1")).thenReturn(Optional.of(room));
+            when(room.isAvailable(now, nowPlusFive)).thenReturn(true);
+        }
 
-    @Test
-    @DisplayName("bookRoom returns true if room is available")
-    void bookRoomReturnTrueIfRoomIsAvailable() {
-        time();
-        when(roomRepository.findById("R1")).thenReturn(Optional.of(room));
-        when(room.isAvailable(now, nowPlusFive))
-                .thenReturn(true);
-        boolean result = bookingSystem.bookRoom("R1", now, nowPlusFive);
+        @Test
+        @DisplayName("bookRoom returns true if room is available")
+        void bookRoomReturnTrueIfRoomIsAvailable() {
 
-        assertThat(result).isTrue();
-    }
+            boolean result = bookingSystem.bookRoom("R1", now, nowPlusFive);
 
-    @Test
-    @DisplayName("Verify that booking has been made")
-    void verifyThatBookingHasBeenMade() {
-        time();
-        when(roomRepository.findById("R1")).thenReturn(Optional.of(room));
-        when(room.isAvailable(now, nowPlusFive))
-                .thenReturn(true);
-        bookingSystem.bookRoom("R1", now, nowPlusFive);
+            assertThat(result).isTrue();
+        }
 
-        verify(room).addBooking(any(Booking.class));
-    }
+        @Test
+        @DisplayName("Verify that booking has been made")
+        void verifyThatBookingHasBeenMade() {
 
-    @Test
-    @DisplayName("Verify that room has been saved")
-    void verifyThatRoomHasBeenSaved() {
-        time();
-        when(roomRepository.findById("R1")).thenReturn(Optional.of(room));
-        when(room.isAvailable(now, nowPlusFive))
-                .thenReturn(true);
-        bookingSystem.bookRoom("R1", now, nowPlusFive);
+            bookingSystem.bookRoom("R1", now, nowPlusFive);
 
-        verify(roomRepository).save(room);
-    }
+            verify(room).addBooking(any(Booking.class));
+        }
 
-    @Test
-    @DisplayName("Verify that booking confirmation has been sent")
-    void verifyThatBookingConfirmationHasBeenSent() throws NotificationException {
-        time();
-        when(roomRepository.findById("R1")).thenReturn(Optional.of(room));
-        when(room.isAvailable(now, nowPlusFive))
-                .thenReturn(true);
-        doThrow(new NotificationException("Notifiering misslyckades"))
-                .when(notificationService).sendBookingConfirmation(any(Booking.class));
+        @Test
+        @DisplayName("Verify that room has been saved")
+        void verifyThatRoomHasBeenSaved() {
 
-        bookingSystem.bookRoom("R1", now, nowPlusFive);
-        verify(notificationService).sendBookingConfirmation(any(Booking.class));
+            bookingSystem.bookRoom("R1", now, nowPlusFive);
+
+            verify(roomRepository).save(room);
+        }
+
+        @Test
+        @DisplayName("Verify that booking confirmation has been sent")
+        void verifyThatBookingConfirmationHasBeenSent() throws NotificationException {
+
+            doThrow(new NotificationException("Notifiering misslyckades"))
+                    .when(notificationService).sendBookingConfirmation(any(Booking.class));
+
+            bookingSystem.bookRoom("R1", now, nowPlusFive);
+            verify(notificationService).sendBookingConfirmation(any(Booking.class));
+        }
     }
 
     @Test
