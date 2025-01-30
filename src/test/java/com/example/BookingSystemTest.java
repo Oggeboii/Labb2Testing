@@ -73,6 +73,7 @@ class BookingSystemTest {
                 bookingSystem.bookRoom(roomId, startTime, endTime));
         assertEquals("Bokning kräver giltiga start- och sluttider samt rum-id", exception.getMessage());
     }
+
     @ParameterizedTest
     @MethodSource("InvalidBookingParameters")
     @DisplayName("Booking in past time, endTime before startTime or non-existing room throws exception ")
@@ -95,6 +96,7 @@ class BookingSystemTest {
         assertThat(bookingSystem.bookRoom("R1", now, nowPlusFive))
                 .isFalse();
     }
+
     @Nested
     @DisplayName("Tests for successful booking")
     class successfulBooking {
@@ -144,33 +146,23 @@ class BookingSystemTest {
         }
     }
 
-    @Test
-    @DisplayName("availableRooms throw exception if startTime is null")
-    void availableRoomsThrowExceptionIfStartTimeIsNull() {
-        var exception = assertThrows(IllegalArgumentException.class, () ->
-                bookingSystem.getAvailableRooms(null, nowPlusFive));
-
-        assertEquals("Måste ange både start- och sluttid", exception.getMessage());
+    static Stream<Arguments> invalidAvailableRoomsParameters() {
+        return Stream.of(
+                Arguments.of(null, nowPlusFive, "Måste ange både start- och sluttid"),
+                Arguments.of( nowPlusFive, null, "Måste ange både start- och sluttid"),
+                Arguments.of( nowPlusFive, now, "Sluttid måste vara efter starttid"));
     }
 
-    @Test
-    @DisplayName("availableRooms throw exception if endTime is null")
-    void availableRoomsThrowExceptionIfEndTimeIsNull() {
+    @ParameterizedTest
+    @MethodSource("invalidAvailableRoomsParameters")
+    @DisplayName("AvailableRooms throws exception if startTime or endTime is null or endTime before startTime")
+    void availableRoomsThrowsExceptionIfStartTimeOrEndTimeIsNullOrEndTimeBeforeStartTime(LocalDateTime startTime, LocalDateTime endTime, String exceptionMessage) {
         var exception = assertThrows(IllegalArgumentException.class, () ->
-                bookingSystem.getAvailableRooms(now, null));
+                bookingSystem.getAvailableRooms(startTime, endTime));
 
-        assertEquals("Måste ange både start- och sluttid", exception.getMessage());
+        assertEquals(exceptionMessage, exception.getMessage());
     }
-
-    @Test
-    @DisplayName("availableRooms throw exception if endTime is before startTime")
-    void availableRoomsThrowExceptionIfEndTimeIsBeforeStartTime() {
-        var exception = assertThrows(IllegalArgumentException.class, () ->
-                bookingSystem.getAvailableRooms(nowPlusFive, now));
-
-        assertEquals("Sluttid måste vara efter starttid", exception.getMessage());
-    }
-
+    
     @Test
     @DisplayName("availableRooms returns list of available rooms")
     void availableRoomsReturnsListOfAvailableRooms() {
