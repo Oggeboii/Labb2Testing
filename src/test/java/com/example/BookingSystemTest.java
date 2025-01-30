@@ -110,7 +110,6 @@ class BookingSystemTest {
         @Test
         @DisplayName("bookRoom returns true if room is available")
         void bookRoomReturnTrueIfRoomIsAvailable() {
-
             boolean result = bookingSystem.bookRoom("R1", now, nowPlusFive);
 
             assertThat(result).isTrue();
@@ -119,7 +118,6 @@ class BookingSystemTest {
         @Test
         @DisplayName("Verify that booking has been made")
         void verifyThatBookingHasBeenMade() {
-
             bookingSystem.bookRoom("R1", now, nowPlusFive);
 
             verify(room).addBooking(any(Booking.class));
@@ -128,7 +126,6 @@ class BookingSystemTest {
         @Test
         @DisplayName("Verify that room has been saved")
         void verifyThatRoomHasBeenSaved() {
-
             bookingSystem.bookRoom("R1", now, nowPlusFive);
 
             verify(roomRepository).save(room);
@@ -137,7 +134,6 @@ class BookingSystemTest {
         @Test
         @DisplayName("Verify that booking confirmation has been sent")
         void verifyThatBookingConfirmationHasBeenSent() throws NotificationException {
-
             doThrow(new NotificationException("Notifiering misslyckades"))
                     .when(notificationService).sendBookingConfirmation(any(Booking.class));
 
@@ -162,11 +158,10 @@ class BookingSystemTest {
 
         assertEquals(exceptionMessage, exception.getMessage());
     }
-    
+
     @Test
     @DisplayName("availableRooms returns list of available rooms")
     void availableRoomsReturnsListOfAvailableRooms() {
-
         when(roomRepository.findAll()).thenReturn(List.of(room));
         when(room.isAvailable(now, nowPlusFive)).thenReturn(true);
         bookingSystem.getAvailableRooms(now, nowPlusFive);
@@ -185,7 +180,6 @@ class BookingSystemTest {
     @Test
     @DisplayName("CancelBooking returns false if roomWithBooking returns empty")
     void cancelBookingReturnsFalseIfRoomWithBookingReturnsEmpty() {
-
         bookingSystem.cancelBooking("BookingId");
         assertThat(bookingSystem.cancelBooking("BookingId")).isEqualTo(false);
     }
@@ -203,43 +197,41 @@ class BookingSystemTest {
         assertEquals("Kan inte avboka påbörjad eller avslutad bokning",
                 exception.getMessage());
     }
-    @Test
-    @DisplayName("Verify that booking has been removed from room ")
-    void verifyThatBookingHasBeenRemovedFromRoom(){
-        time();
-        when(room.hasBooking("BookingId")).thenReturn(true);
-        when(room.getBooking("BookingId")).thenReturn(booking);
-        when(booking.getStartTime()).thenReturn(nowPlusFive);
-        when(roomRepository.findAll()).thenReturn(List.of(room));
-        bookingSystem.cancelBooking("BookingId");
-        verify(room).removeBooking("BookingId");
-    }
-    @Test
-    @DisplayName("Verify that cancellation confirmation has been sent")
-    void verifyThatCancellationConfirmationHasBeenSent() throws NotificationException {
-        time();
-        when(room.hasBooking("BookingId")).thenReturn(true);
-        when(room.getBooking("BookingId")).thenReturn(booking);
-        when(booking.getStartTime()).thenReturn(nowPlusFive);
-        when(roomRepository.findAll()).thenReturn(List.of(room));
 
-        doThrow(new NotificationException("Notifiering misslyckades"))
-                .when(notificationService).sendCancellationConfirmation(any(Booking.class));
-        bookingSystem.cancelBooking("BookingId");
-        verify(notificationService).sendCancellationConfirmation(any(Booking.class));
-    }
-    @Test
-    @DisplayName("Cancel booking returns true")
-    void cancelBookingReturnsTrue(){
-        time();
-        when(room.hasBooking("BookingId")).thenReturn(true);
-        when(room.getBooking("BookingId")).thenReturn(booking);
-        when(booking.getStartTime()).thenReturn(nowPlusFive);
-        when(roomRepository.findAll()).thenReturn(List.of(room));
-        boolean result = bookingSystem.cancelBooking("BookingId");
-        assertThat(result).isTrue();
+    @Nested
+    @DisplayName("Test for successful cancellation")
+    class successfulCancellation {
+        @BeforeEach
+        void setup() {
+            time();
+            when(room.hasBooking("BookingId")).thenReturn(true);
+            when(room.getBooking("BookingId")).thenReturn(booking);
+            when(booking.getStartTime()).thenReturn(nowPlusFive);
+            when(roomRepository.findAll()).thenReturn(List.of(room));
+        }
 
-    }
+        @Test
+        @DisplayName("Verify that booking has been removed from room ")
+        void verifyThatBookingHasBeenRemovedFromRoom() {
+            bookingSystem.cancelBooking("BookingId");
+            verify(room).removeBooking("BookingId");
+        }
 
+        @Test
+        @DisplayName("Verify that cancellation confirmation has been sent")
+        void verifyThatCancellationConfirmationHasBeenSent() throws NotificationException {
+            doThrow(new NotificationException("Notifiering misslyckades"))
+                    .when(notificationService).sendCancellationConfirmation(any(Booking.class));
+            bookingSystem.cancelBooking("BookingId");
+            verify(notificationService).sendCancellationConfirmation(any(Booking.class));
+        }
+
+        @Test
+        @DisplayName("Cancel booking returns true")
+        void cancelBookingReturnsTrue() {
+            boolean result = bookingSystem.cancelBooking("BookingId");
+            assertThat(result).isTrue();
+        }
+    }
 
 }
