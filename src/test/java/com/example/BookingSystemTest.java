@@ -259,6 +259,18 @@ class BookingSystemTest {
         bookingSystem.cancelBooking("BookingId");
         verify(notificationService).sendCancellationConfirmation(any(Booking.class));
     }
+    @Test
+    @DisplayName("Cancel booking returns true")
+    void cancelBookingReturnsTrue(){
+        time();
+        when(room.hasBooking("BookingId")).thenReturn(true);
+        when(room.getBooking("BookingId")).thenReturn(booking);
+        when(booking.getStartTime()).thenReturn(nowPlusFive);
+        when(roomRepository.findAll()).thenReturn(List.of(room));
+        boolean result = bookingSystem.cancelBooking("BookingId");
+        assertThat(result).isTrue();
+
+    }
 
 
 }
