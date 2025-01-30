@@ -2,6 +2,7 @@ package com.example;
 
 
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -25,8 +26,8 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class BookingSystemTest {
 
-    LocalDateTime now = LocalDateTime.of(2025, Month.JANUARY, 27, 12, 0);
-    LocalDateTime nowPlusFive = LocalDateTime.of(2025, Month.JANUARY, 27, 12, 5);
+    static LocalDateTime now = LocalDateTime.of(2025, Month.JANUARY, 27, 12, 0);
+    static LocalDateTime nowPlusFive = LocalDateTime.of(2025, Month.JANUARY, 27, 12, 5);
 
     @Mock
     RoomRepository roomRepository;
@@ -49,19 +50,20 @@ class BookingSystemTest {
     static Stream<Arguments> roomTimeNull() {
         return Stream.of(
                 Arguments.of(null,
-                        LocalDateTime.of(2025, Month.JANUARY, 27, 12, 0),
-                        LocalDateTime.of(2025, Month.JANUARY, 27, 12, 5)),
+                        now,
+                        nowPlusFive),
                 Arguments.of("R1",
                         null,
-                        LocalDateTime.of(2025, Month.JANUARY, 27, 12, 5)),
+                        nowPlusFive),
                 Arguments.of("R1",
-                        LocalDateTime.of(2025, Month.JANUARY, 27, 12, 0),
+                        now,
                         null));
     }
 
     void time() {
         when(timeProvider.getCurrentTime()).thenReturn(now);
     }
+
 
     @ParameterizedTest
     @MethodSource("roomTimeNull")
