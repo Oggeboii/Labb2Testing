@@ -8,18 +8,19 @@ public class ShoppingCart {
     List <Item> items = new ArrayList<>() {
     };
     private int totalPrice = 0;
-    private int size = 0;
 
     public int size(){
         return items.size();
     }
     public void add(String name, int price){
         items.add(new Item(name, price));
-        size++;
         totalPrice += price;
     }
     public void remove(String name, int price){
-        items.removeIf(i -> i.getName().equals(name) && i.getPrice() == price);
+        Item removeItem;
+        removeItem = items.stream().filter(item -> item.getName().equals(name)).findFirst().get();
+        items.remove(removeItem);
+
         totalPrice -= price;
     }
     public int totalPrice(){
@@ -32,4 +33,9 @@ public class ShoppingCart {
         return items;
     }
 
+    public void quantityChange(String name, int price, int quantity) {
+    for(int i = 0; i < quantity; i++) {
+        remove(name, price);
+        }
+    }
 }

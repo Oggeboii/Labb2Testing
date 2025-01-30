@@ -32,6 +32,7 @@ class ShoppingCartTest {
         shoppingCart.remove("Potatoes",5);
         assertThat(shoppingCart.size()).isEqualTo(1);
     }
+
     @Test
     @DisplayName("Item is removed from cart after remove has been called")
     void itemIsRemovedFromCartAfterRemoveHasBeenCalled(){
@@ -40,8 +41,7 @@ class ShoppingCartTest {
         shoppingCart.remove("Potatoes",5);
         assertThat(shoppingCart.findAll())
                 .extracting(Item::getName)
-                .contains("Milk");
-
+                .containsOnly("Milk");
     }
     
     @Test
@@ -51,6 +51,7 @@ class ShoppingCartTest {
         shoppingCart.add("Potatoes",5);
         assertThat(shoppingCart.totalPrice()).isEqualTo(10);
     }
+
     @Test
     @DisplayName("Calculate price after discount been applied to whole cart")
     void calculatePriceAfterDiscountBeenAppliedToWholeCart(){
@@ -66,7 +67,17 @@ class ShoppingCartTest {
         shoppingCart.add("Potatoes",5);
         assertThat(shoppingCart.findAll())
                 .extracting(Item::getName)
-                .contains("Milk","Potatoes");
+                .containsOnly("Milk","Potatoes");
+    }
+
+    @Test
+    @DisplayName("Quantity changes leaves correct number of the items in cart")
+    void quantityChangesLeavesCorrectNumberOfTheItemsInCart(){
+        shoppingCart.add("Milk",5);
+        shoppingCart.add("Milk",5);
+        shoppingCart.add("Milk",5);
+        shoppingCart.quantityChange("Milk",5,2);
+        assertThat(shoppingCart.findAll()).extracting(Item::getName).containsExactly("Milk");
     }
 
 
