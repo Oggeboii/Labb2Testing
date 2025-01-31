@@ -13,6 +13,9 @@ public class ShoppingCart {
         return items.size();
     }
     public void add(String name, int price){
+        if (name == null || name.isEmpty())
+            throw new IllegalArgumentException("Name cannot be null or empty");
+
         items.add(new Item(name, price));
         totalPrice += price;
     }
@@ -35,11 +38,7 @@ public class ShoppingCart {
 
     public void quantityChange(String name, int price, int quantity) {
     int result = (int) items.stream().filter(item -> item.getName().equals(name)).count();
-    if (result > quantity) {
-            remove(name, price);
-        }
-    if (result < quantity) {
-        add(name, price);
-    }
+    if (result > quantity) remove(name, price);
+    if (result < quantity) add(name, price);
     }
 }

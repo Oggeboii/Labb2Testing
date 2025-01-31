@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 
 
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ShoppingCartTest {
 
@@ -22,6 +23,16 @@ class ShoppingCartTest {
     void addItemToShoppingCartIncreasesSize(){
         shoppingCart.add("Milk",5);
         assertThat(shoppingCart.size()).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("if added item is null throw exception")
+    void ifAddedItemIsNullThrowException(){
+        var exception = assertThrows(IllegalArgumentException.class, () -> {
+            shoppingCart.add(null,5);
+        });
+        assertThat(exception.getMessage()).isEqualTo("Name cannot be null or empty");
+
     }
 
     @Test
@@ -86,8 +97,10 @@ class ShoppingCartTest {
         shoppingCart.add("Milk",5);
         shoppingCart.quantityChange("Milk",5,2);
         assertThat(shoppingCart.findAll()).extracting(Item::getName).containsExactly("Milk", "Milk");
-
     }
+
+
+
 
 
 
