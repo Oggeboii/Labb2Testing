@@ -109,6 +109,16 @@ class ShoppingCartTest {
         shoppingCart.add("Potatoes",5);
         assertThat(shoppingCart.totalPrice()).isEqualTo(10);
     }
+    @Test
+    @DisplayName("Discount applies to all items of same typ")
+    void discountAppliesToAllItemsOfSameTyp(){
+        shoppingCart.add("Milk",5);
+        shoppingCart.add("Milk",5);
+        shoppingCart.addDiscount("Milk",0.2F);
+        assertThat(shoppingCart.totalPrice()).isEqualTo(8);
+
+    }
+
 
     @Test
     @DisplayName("Calculate price after discount been applied to whole cart")

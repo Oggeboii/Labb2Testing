@@ -21,7 +21,7 @@ public class Item{
         return price;
     }
 
-    private void setPrice(int price) {
+    public void setPrice(int price) {
         this.price = price;
     }
 }

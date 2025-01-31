@@ -38,11 +38,21 @@ public class ShoppingCart {
         totalPrice -= price;
     }
     public int totalPrice(){
-        return totalPrice;
+        return totalPrice = items.stream().mapToInt(Item::getPrice).sum();
+    }
+    public void addDiscount(String name, float discount) {
+        for (Item item : items) {
+            if (item.getName().equals(name)) {
+                item.setPrice((int) (item.getPrice()-(item.getPrice()*discount)));
+            }
+        }
     }
     public void totalDiscount(float discount){
-        totalPrice = (int) (totalPrice - (totalPrice * discount));
+        for (Item item : items) {
+            item.setPrice((int) (item.getPrice() - (item.getPrice() * discount)));
+        }
     }
+
     public List<Item> findAll(){
         return items;
     }
