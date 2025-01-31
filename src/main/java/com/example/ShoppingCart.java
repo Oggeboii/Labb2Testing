@@ -19,6 +19,7 @@ public class ShoppingCart {
             if (items.stream().anyMatch(item -> item.getName().equals(name))) {
                 price = items.stream().filter(item -> item.getName().equals(name)).findFirst().get().getPrice();
             }
+            else throw new IllegalArgumentException("Price cannot be null or less than 0");
         }
 
 

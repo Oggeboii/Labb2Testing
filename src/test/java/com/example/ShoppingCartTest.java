@@ -49,8 +49,19 @@ class ShoppingCartTest {
             shoppingCart.add("Milk",5);
             shoppingCart.add("Milk",null);
         assertThat(shoppingCart.findAll()).extracting(Item::getName).containsExactly("Milk", "Milk");
-        
     }
+
+    @Test
+    @DisplayName("if price is null and can not be found an exception is thrown")
+    void ifPriceIsNullAndCanNotBeFoundAnExceptionIsThrown(){
+        var exception = assertThrows(IllegalArgumentException.class, () -> {
+            shoppingCart.add("Potatoes",5);
+            shoppingCart.add("Milk",null);
+        });
+        assertThat(exception.getMessage()).isEqualTo("Price cannot be null or less than 0");
+
+    }
+
 
     @Test
     @DisplayName("Removing item from shopping cart decreases size")
