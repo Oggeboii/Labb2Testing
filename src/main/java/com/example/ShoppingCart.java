@@ -48,6 +48,9 @@ public class ShoppingCart {
     }
 
     public void quantityChange(String name, int price, int quantity) {
+        if (quantity<0)
+            throw new IllegalArgumentException("Quantity cannot be less than zero");
+
     int result = (int) items.stream().filter(item -> item.getName().equals(name)).count();
     if (result > quantity) remove(name, price);
     if (result < quantity) add(name, price);

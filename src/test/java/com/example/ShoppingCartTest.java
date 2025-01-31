@@ -146,6 +146,16 @@ class ShoppingCartTest {
         assertThat(shoppingCart.findAll()).extracting(Item::getName).containsExactly("Milk", "Milk");
     }
 
+    @Test
+    @DisplayName("Quantity change below zero throws exception")
+    void quantityChangeBelowZeroThrowsException(){
+        shoppingCart.add("Milk",5);
+        var exception = assertThrows(IllegalArgumentException.class, () -> {
+            shoppingCart.quantityChange("Milk",5,-1);
+        });
+        assertThat(exception.getMessage()).isEqualTo("Quantity cannot be less than zero");
+
+    }
 
 
 
