@@ -33,6 +33,7 @@ class ShoppingCartTest {
         });
         assertThat(exception.getMessage()).isEqualTo("Name cannot be null or empty");
     }
+
     @Test
     @DisplayName("if added item name is blank an exception is thrown")
     void ifAddedItemNameIsBlankAnExceptionIsThrown(){
@@ -40,6 +41,15 @@ class ShoppingCartTest {
             shoppingCart.add("",5);
         });
         assertThat(exception.getMessage()).isEqualTo("Name cannot be null or empty");
+    }
+
+    @Test
+    @DisplayName("if price is null but same item has been added before price can be found")
+    void ifPriceIsNullButSameItemHasBeenAddedBeforePriceCanBeFound(){
+            shoppingCart.add("Milk",5);
+            shoppingCart.add("Milk",null);
+        assertThat(shoppingCart.findAll()).extracting(Item::getName).containsExactly("Milk", "Milk");
+        
     }
 
     @Test

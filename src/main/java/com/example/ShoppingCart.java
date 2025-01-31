@@ -12,9 +12,15 @@ public class ShoppingCart {
     public int size(){
         return items.size();
     }
-    public void add(String name, int price){
+    public void add(String name, Integer price){
         if (name == null || name.isEmpty())
             throw new IllegalArgumentException("Name cannot be null or empty");
+        if (price == null || price < 0) {
+            if (items.stream().anyMatch(item -> item.getName().equals(name))) {
+                price = items.stream().filter(item -> item.getName().equals(name)).findFirst().get().getPrice();
+            }
+        }
+
 
         items.add(new Item(name, price));
         totalPrice += price;
