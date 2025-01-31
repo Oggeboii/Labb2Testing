@@ -28,28 +28,29 @@ public class ShoppingCart {
             if (price != items.stream().filter(item -> item.getName().equals(name)).findFirst().get().getPrice())
                 throw new IllegalArgumentException("Item cannot have two different prices");
         }
-
-
         items.add(new Item(name, price));
         totalPrice += price;
     }
+
     public void add(String name){
         int price = items.stream().filter(item -> item.getName().equals(name)).findFirst().get().getPrice();
         add(name, price);
     }
 
-
-
     public void remove(String name, int price){
-        if (items.stream().noneMatch(item -> item.getName().equals(name))) {
+        if (items.stream().noneMatch(item -> item.getName().equals(name)) && !items.isEmpty()) {
             throw new IllegalArgumentException("Item not found");
         }
+        if (items.isEmpty())
+            throw new IllegalArgumentException("Cart is empty");
+
         Item removeItem;
         removeItem = items.stream().filter(item -> item.getName().equals(name)).findFirst().get();
         items.remove(removeItem);
 
         totalPrice -= price;
     }
+
     public int totalPrice(){
         return totalPrice = items.stream().mapToInt(Item::getPrice).sum();
     }

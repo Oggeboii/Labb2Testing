@@ -106,6 +106,15 @@ class ShoppingCartTest {
             shoppingCart.remove("Potatoes", 5);
         });
         assertThat(exception.getMessage()).isEqualTo("Item not found");
+    }
+
+    @Test
+    @DisplayName("Removing from empty cart throws exception")
+    void removingFromEmptyCartThrowsException(){
+        var exception = assertThrows(IllegalArgumentException.class, () -> {
+            shoppingCart.remove("Milk", 5);
+        });
+        assertThat(exception.getMessage()).isEqualTo("Cart is empty");
 
     }
 
