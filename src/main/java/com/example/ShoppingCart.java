@@ -43,6 +43,8 @@ public class ShoppingCart {
     public void addDiscount(String name, float discount) {
         if(discount > 1)
             throw new IllegalArgumentException("Discount cannot be greater than 1");
+        if (discount < 0)
+            throw new IllegalArgumentException("Discount cannot be less than 0");
 
         for (Item item : items) {
             if (item.getName().equals(name)) {
