@@ -116,8 +116,18 @@ class ShoppingCartTest {
         shoppingCart.add("Milk",5);
         shoppingCart.addDiscount("Milk",0.2F);
         assertThat(shoppingCart.totalPrice()).isEqualTo(8);
-
     }
+    @Test
+    @DisplayName("addDiscount throws exception if discount greater than 1")
+    void addDiscountThrowsExceptionIfDiscountGreaterThan1(){
+        shoppingCart.add("Milk",5);
+        shoppingCart.add("Milk",5);
+        var exception = assertThrows(IllegalArgumentException.class, () -> {
+        shoppingCart.addDiscount("Milk",1.1F);
+        });
+        assertThat(exception.getMessage()).isEqualTo("Discount cannot be greater than 1");
+    }
+
 
 
     @Test
@@ -164,11 +174,6 @@ class ShoppingCartTest {
             shoppingCart.quantityChange("Milk",5,-1);
         });
         assertThat(exception.getMessage()).isEqualTo("Quantity cannot be less than zero");
-
     }
-
-
-
-
 
 }

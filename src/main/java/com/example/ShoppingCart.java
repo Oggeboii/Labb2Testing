@@ -41,6 +41,9 @@ public class ShoppingCart {
         return totalPrice = items.stream().mapToInt(Item::getPrice).sum();
     }
     public void addDiscount(String name, float discount) {
+        if(discount > 1)
+            throw new IllegalArgumentException("Discount cannot be greater than 1");
+
         for (Item item : items) {
             if (item.getName().equals(name)) {
                 item.setPrice((int) (item.getPrice()-(item.getPrice()*discount)));
