@@ -24,6 +24,12 @@ public class ShoppingCart {
         if (price < 0)
             throw new IllegalArgumentException("Price cannot be less than 0");
 
+        if (items.stream().anyMatch(item -> item.getName().equals(name))){
+            if (price != items.stream().filter(item -> item.getName().equals(name)).findFirst().get().getPrice())
+                throw new IllegalArgumentException("Item cannot have two different prices");
+        }
+
+
         items.add(new Item(name, price));
         totalPrice += price;
     }

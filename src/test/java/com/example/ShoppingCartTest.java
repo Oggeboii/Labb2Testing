@@ -76,7 +76,16 @@ class ShoppingCartTest {
         shoppingCart.add("Milk", 5);
         shoppingCart.add("Milk");
         assertThat(shoppingCart.findAll()).extracting(Item::getName).containsExactly("Milk", "Milk");
+    }
 
+    @Test
+    @DisplayName("Item cannot be added with two different prices")
+    void itemCannotBeAddedWithTwoDifferentPrices(){
+        var exception = assertThrows(IllegalArgumentException.class, () -> {
+            shoppingCart.add("Milk", 5);
+            shoppingCart.add("Milk", 6);
+        });
+        assertThat(exception.getMessage()).isEqualTo("Item cannot have two different prices");
     }
 
 
