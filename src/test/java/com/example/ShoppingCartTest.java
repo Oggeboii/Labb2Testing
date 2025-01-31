@@ -44,22 +44,30 @@ class ShoppingCartTest {
     }
 
     @Test
-    @DisplayName("if price is null but same item has been added before price can be found")
-    void ifPriceIsNullButSameItemHasBeenAddedBeforePriceCanBeFound(){
+    @DisplayName("if add is called and price is null but same item has been added before price can be found")
+    void ifAddIsCalledAndPriceIsNullButSameItemHasBeenAddedBeforePriceCanBeFound(){
             shoppingCart.add("Milk",5);
             shoppingCart.add("Milk",null);
         assertThat(shoppingCart.findAll()).extracting(Item::getName).containsExactly("Milk", "Milk");
     }
 
     @Test
-    @DisplayName("if price is null and can not be found an exception is thrown")
-    void ifPriceIsNullAndCanNotBeFoundAnExceptionIsThrown(){
+    @DisplayName("if add is called and price is null and can not be found an exception is thrown")
+    void ifAddIsCalledAndPriceIsNullAndCanNotBeFoundAnExceptionIsThrown(){
         var exception = assertThrows(IllegalArgumentException.class, () -> {
             shoppingCart.add("Potatoes",5);
             shoppingCart.add("Milk",null);
         });
-        assertThat(exception.getMessage()).isEqualTo("Price cannot be null or less than 0");
-
+        assertThat(exception.getMessage()).isEqualTo("Price cannot be null");
+    }
+    @Test
+    @DisplayName("if price is less than zero an exception is thrown")
+    void ifPriceIsZeroAnExceptionIsThrown(){
+        var exception = assertThrows(IllegalArgumentException.class, () -> {
+            shoppingCart.add("Potatoes",5);
+            shoppingCart.add("Milk",-5);
+        });
+        assertThat(exception.getMessage()).isEqualTo("Price cannot be less than 0");
     }
 
 
@@ -70,6 +78,17 @@ class ShoppingCartTest {
         shoppingCart.add("Potatoes",5);
         shoppingCart.remove("Potatoes",5);
         assertThat(shoppingCart.size()).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("Removing non-existing item throws exception")
+    void removingNonExistingItemThrowsException(){
+        var exception = assertThrows(IllegalArgumentException.class, () -> {
+            shoppingCart.add("Milk",5);
+            shoppingCart.remove("Potatoes",5);
+        });
+        assertThat(exception.getMessage()).isEqualTo("Item not found");
+
     }
 
     @Test

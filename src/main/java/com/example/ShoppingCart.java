@@ -15,18 +15,22 @@ public class ShoppingCart {
     public void add(String name, Integer price){
         if (name == null || name.isEmpty())
             throw new IllegalArgumentException("Name cannot be null or empty");
-        if (price == null || price < 0) {
+        if (price == null) {
             if (items.stream().anyMatch(item -> item.getName().equals(name))) {
                 price = items.stream().filter(item -> item.getName().equals(name)).findFirst().get().getPrice();
             }
-            else throw new IllegalArgumentException("Price cannot be null or less than 0");
+            else throw new IllegalArgumentException("Price cannot be null");
         }
-
+        if (price < 0)
+            throw new IllegalArgumentException("Price cannot be less than 0");
 
         items.add(new Item(name, price));
         totalPrice += price;
     }
     public void remove(String name, int price){
+        if (items.stream().noneMatch(item -> item.getName().equals(name))) {
+            throw new IllegalArgumentException("Item not found");
+        }
         Item removeItem;
         removeItem = items.stream().filter(item -> item.getName().equals(name)).findFirst().get();
         items.remove(removeItem);
