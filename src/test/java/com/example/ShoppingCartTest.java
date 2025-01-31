@@ -146,6 +146,17 @@ class ShoppingCartTest {
             shoppingCart.totalDiscount(1.1F);
         });
         assertThat(exception.getMessage()).isEqualTo("Discount cannot be greater than 1");
+    }
+
+    @Test
+    @DisplayName("totalDiscount throws exception if discount less than 0")
+    void totalDiscountThrowsExceptionIfDiscountLessThan0(){
+        shoppingCart.add("Milk",5);
+        shoppingCart.add("Potatoes",5);
+        var exception = assertThrows(IllegalArgumentException.class, () -> {
+            shoppingCart.totalDiscount(-0.1F);
+        });
+        assertThat(exception.getMessage()).isEqualTo("Discount cannot be less than 0");
 
     }
 
