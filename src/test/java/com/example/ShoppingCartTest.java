@@ -26,13 +26,20 @@ class ShoppingCartTest {
     }
 
     @Test
-    @DisplayName("if added item is null throw exception")
+    @DisplayName("if added item is null an exception is thrown")
     void ifAddedItemIsNullThrowException(){
         var exception = assertThrows(IllegalArgumentException.class, () -> {
             shoppingCart.add(null,5);
         });
         assertThat(exception.getMessage()).isEqualTo("Name cannot be null or empty");
-
+    }
+    @Test
+    @DisplayName("if added item name is blank an exception is thrown")
+    void ifAddedItemNameIsBlankAnExceptionIsThrown(){
+        var exception = assertThrows(IllegalArgumentException.class, () -> {
+            shoppingCart.add("",5);
+        });
+        assertThat(exception.getMessage()).isEqualTo("Name cannot be null or empty");
     }
 
     @Test
