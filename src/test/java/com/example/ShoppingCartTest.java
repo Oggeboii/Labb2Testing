@@ -71,14 +71,24 @@ class ShoppingCartTest {
     }
 
     @Test
-    @DisplayName("Quantity changes leaves correct number of the items in cart")
+    @DisplayName("Quantity changes removes correct number of the items in cart")
     void quantityChangesLeavesCorrectNumberOfTheItemsInCart(){
         shoppingCart.add("Milk",5);
         shoppingCart.add("Milk",5);
         shoppingCart.add("Milk",5);
         shoppingCart.quantityChange("Milk",5,2);
-        assertThat(shoppingCart.findAll()).extracting(Item::getName).containsExactly("Milk");
+        assertThat(shoppingCart.findAll()).extracting(Item::getName).containsExactly("Milk", "Milk");
     }
+
+    @Test
+    @DisplayName("Quantity changes adds correct number of items to the cart")
+    void quantityChangesAddsCorrectNumberOfItemsToTheCart(){
+        shoppingCart.add("Milk",5);
+        shoppingCart.quantityChange("Milk",5,2);
+        assertThat(shoppingCart.findAll()).extracting(Item::getName).containsExactly("Milk", "Milk");
+
+    }
+
 
 
 }

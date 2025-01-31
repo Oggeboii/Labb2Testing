@@ -34,8 +34,12 @@ public class ShoppingCart {
     }
 
     public void quantityChange(String name, int price, int quantity) {
-    for(int i = 0; i < quantity; i++) {
-        remove(name, price);
+    int result = (int) items.stream().filter(item -> item.getName().equals(name)).count();
+    if (result > quantity) {
+            remove(name, price);
         }
+    if (result < quantity) {
+        add(name, price);
+    }
     }
 }
