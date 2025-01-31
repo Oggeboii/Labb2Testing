@@ -27,6 +27,13 @@ public class ShoppingCart {
         items.add(new Item(name, price));
         totalPrice += price;
     }
+    public void add(String name){
+        int price = items.stream().filter(item -> item.getName().equals(name)).findFirst().get().getPrice();
+        add(name, price);
+    }
+
+
+
     public void remove(String name, int price){
         if (items.stream().noneMatch(item -> item.getName().equals(name))) {
             throw new IllegalArgumentException("Item not found");
@@ -67,7 +74,9 @@ public class ShoppingCart {
         return items;
     }
 
-    public void quantityChange(String name, int price, int quantity) {
+    public void quantityChange(String name, int price, Integer quantity) {
+        if(quantity == null)
+            throw new IllegalArgumentException("Quantity cannot be null");
         if (quantity<0)
             throw new IllegalArgumentException("Quantity cannot be less than zero");
 

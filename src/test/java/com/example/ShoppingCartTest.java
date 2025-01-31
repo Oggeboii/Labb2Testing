@@ -28,16 +28,19 @@ class ShoppingCartTest {
     @Test
     @DisplayName("if added item is null an exception is thrown")
     void ifAddedItemIsNullThrowException() {
-        var exception = assertThrows(IllegalArgumentException.class, () -> shoppingCart.add(null, 5));
+        var exception = assertThrows(IllegalArgumentException.class, () ->
+                shoppingCart.add(null, 5));
         assertThat(exception.getMessage()).isEqualTo("Name cannot be null or empty");
     }
 
     @Test
     @DisplayName("if added item name is blank an exception is thrown")
     void ifAddedItemNameIsBlankAnExceptionIsThrown() {
-        var exception = assertThrows(IllegalArgumentException.class, () -> shoppingCart.add("", 5));
+        var exception = assertThrows(IllegalArgumentException.class, () ->
+                shoppingCart.add("", 5));
         assertThat(exception.getMessage()).isEqualTo("Name cannot be null or empty");
     }
+
 
     @Test
     @DisplayName("if add is called and price is null but same item has been added before price can be found")
@@ -65,6 +68,15 @@ class ShoppingCartTest {
             shoppingCart.add("Milk", -5);
         });
         assertThat(exception.getMessage()).isEqualTo("Price cannot be less than 0");
+    }
+
+    @Test
+    @DisplayName("add can be used without Price if same Item is already in cart")
+    void addCanBeUsedWithoutPrice(){
+        shoppingCart.add("Milk", 5);
+        shoppingCart.add("Milk");
+        assertThat(shoppingCart.findAll()).extracting(Item::getName).containsExactly("Milk", "Milk");
+
     }
 
 
@@ -203,6 +215,16 @@ class ShoppingCartTest {
         var exception = assertThrows(IllegalArgumentException.class, () ->
                 shoppingCart.quantityChange("Milk", 5, -1));
         assertThat(exception.getMessage()).isEqualTo("Quantity cannot be less than zero");
+    }
+
+    @Test
+    @DisplayName("Quantity change with null throws exception")
+    void quantityChangeWithNullThrowsException(){
+        shoppingCart.add("Milk", 5);
+        var exception = assertThrows(IllegalArgumentException.class, () ->
+                shoppingCart.quantityChange("Milk", 5, null));
+        assertThat(exception.getMessage()).isEqualTo("Quantity cannot be null");
+
     }
 
 }
